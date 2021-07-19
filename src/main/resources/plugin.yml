@@ -1,0 +1,4 @@
+name: Checkclient
+version: ${project.version}
+main: xyz.n7mn.dev.checkclient.Checkclient
+api-version: 1.16
