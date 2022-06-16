@@ -1,4 +1,6 @@
-name: Checkclient
+name: CheckClient
 version: ${project.version}
-main: xyz.n7mn.dev.checkclient.Checkclient
-api-version: 1.16
+main: xyz.n7mn.dev.checkclient.CheckClient
+api-version: 1.13
+
+softdepend: [PlaceholderAPI, PacketEvents, LunarClient-API]
