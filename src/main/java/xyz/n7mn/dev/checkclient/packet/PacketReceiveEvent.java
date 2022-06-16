@@ -69,6 +69,8 @@ public class PacketReceiveEvent extends PacketListenerAbstract {
                     data.getClientData().setType(ClientType.FEATHER_FABRIC);
                 } else if (client.equalsIgnoreCase("plc")) {
                     data.getClientData().setType(ClientType.PVP_LOUNGE);
+                } else if (client.equalsIgnoreCase("blueberry")) {
+                    data.getClientData().setType(ClientType.BLUEBERRY);
                 } else if (client.equalsIgnoreCase("vanilla")) {
                     data.getClientData().setType(ClientType.VANILLA);
                 }

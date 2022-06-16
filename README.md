@@ -8,6 +8,7 @@
 - [x] PvPLounge
 - [x] LabyMod
 - [x] 5-zig mod
+- [x] BlueBerry
 
 ## TODO
 - [ ] Forge (1.13-latest)

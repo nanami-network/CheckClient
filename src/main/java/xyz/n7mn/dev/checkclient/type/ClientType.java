@@ -11,6 +11,7 @@ public enum ClientType {
     PVP_LOUNGE("PVP Lounge Client"),
     LABY_MOD("Laby Mod"),
     ZIG_MOD("5zig Mod"),
+    BLUEBERRY("BlueBerry"),
     UNKNOWN("Unknown");
 
     private String name;
