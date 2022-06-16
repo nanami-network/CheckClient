@@ -1,7 +1,5 @@
 package xyz.n7mn.dev.checkclient.packet;
 
-import com.lunarclient.bukkitapi.LunarClientAPI;
-import com.lunarclient.bukkitapi.nethandler.LCPacket;
 import com.lunarclient.bukkitapi.nethandler.client.LCPacketModSettings;
 import com.lunarclient.bukkitapi.nethandler.client.obj.ModSettings;
 import io.github.retrooper.packetevents.PacketEvents;
@@ -10,18 +8,15 @@ import io.github.retrooper.packetevents.event.impl.PacketPlayReceiveEvent;
 import io.github.retrooper.packetevents.packettype.PacketType;
 import io.github.retrooper.packetevents.packetwrappers.play.in.custompayload.WrappedPacketInCustomPayload;
 import io.github.retrooper.packetevents.packetwrappers.play.out.custompayload.WrappedPacketOutCustomPayload;
-import org.bukkit.Bukkit;
-import xyz.n7mn.dev.checkclient.CheckClientInstance;
+import io.github.retrooper.packetevents.utils.server.ServerVersion;
 import xyz.n7mn.dev.checkclient.data.PlayerData;
 import xyz.n7mn.dev.checkclient.data.PlayerDataUtil;
 import xyz.n7mn.dev.checkclient.lunar.LunarClient;
 import xyz.n7mn.dev.checkclient.type.ClientType;
 import xyz.n7mn.dev.checkclient.util.FeatherUtils;
 import xyz.n7mn.dev.checkclient.util.ForgeUtils;
-import xyz.n7mn.dev.checkclient.util.LabyUtils;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.HashMap;
 
 public class PacketReceiveEvent extends PacketListenerAbstract {
@@ -43,11 +38,11 @@ public class PacketReceiveEvent extends PacketListenerAbstract {
                 if (client.equalsIgnoreCase("forge")) {
                     data.getClientData().setType(ClientType.FORGE_1_13_ABOVE);
 
-                    if (!data.getClientData().isSendedHandShake()) {
-                        //TODO:
-
-                        data.getClientData().setSendedHandShake(true);
+                    if (!data.getClientData().isSendedHandShake() && PacketEvents.get().getServerUtils().getVersion().isNewerThan(ServerVersion.v_1_12_2)) {
+                        //todo: fake handshake
                     }
+
+                    data.getClientData().setSendedHandShake(true);
                 } else if (client.equalsIgnoreCase("fml:forge")) {
                     data.getClientData().setType(ClientType.FORGE_1_13_BELOW);
 
@@ -89,15 +84,23 @@ public class PacketReceiveEvent extends PacketListenerAbstract {
                 FeatherUtils.readFeatherMod(data, wrapper.getData());
 
                 data.getModData().setReceivedFeatherModData(true);
-            } else if (channel.equalsIgnoreCase("labymod3:main")) {
+            } else if (channel.equalsIgnoreCase("labymod3:main")
+                    && data.getClientData().getType() == ClientType.VANILLA) {
                 data.getClientData().setType(ClientType.LABY_MOD);
 
                 //LabyUtils.readLabyMod(data, wrapper.getData());
             } else if (channel.equalsIgnoreCase("REGISTER")) {
                 if (client.equalsIgnoreCase("lunarclient:pm")) {
                     data.getClientData().setReceivedLunarChannel(true);
+                } else if (client.equalsIgnoreCase("thezigmod:zig_set")
+                    && data.getClientData().getType() == ClientType.VANILLA) {
+                    data.getClientData().setType(ClientType.ZIG_MOD);
                 }
             }
         }
+    }
+
+    public void readyAlertModerator(PlayerData data) {
+
     }
 }

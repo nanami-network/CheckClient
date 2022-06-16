@@ -38,6 +38,12 @@ public final class CheckClient extends JavaPlugin {
         PacketEvents.get().init();
 
         Bukkit.getPluginManager().registerEvents(new EventListener(), this);
+
+        Bukkit.getMessenger().registerIncomingPluginChannel(this, "fml:handshake", new EventListener());
+        Bukkit.getMessenger().registerOutgoingPluginChannel(this, "fml:handshake");
+
+        Bukkit.getMessenger().registerIncomingPluginChannel(this, "fml:handshake", new EventListener());
+        Bukkit.getMessenger().registerOutgoingPluginChannel(this, "fml:handshake");
         // Plugin startup logic
     }
 

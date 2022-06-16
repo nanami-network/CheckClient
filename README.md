@@ -7,7 +7,7 @@
 - [x] Forge (1.8-1.12.2)
 - [x] PvPLounge
 - [x] LabyMod
+- [x] 5-zig mod
 
 ## TODO
 - [ ] Forge (1.13-latest)
-- [ ] 5-zig mod

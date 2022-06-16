@@ -10,6 +10,7 @@ public enum ClientType {
     FABRIC("Fabric"),
     PVP_LOUNGE("PVP Lounge Client"),
     LABY_MOD("Laby Mod"),
+    ZIG_MOD("5zig Mod"),
     UNKNOWN("Unknown");
 
     private String name;
