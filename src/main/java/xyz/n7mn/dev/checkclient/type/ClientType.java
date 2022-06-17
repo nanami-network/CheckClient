@@ -12,7 +12,8 @@ public enum ClientType {
     LABY_MOD("Laby Mod"),
     ZIG_MOD("5zig Mod"),
     BLUEBERRY("BlueBerry"),
-    UNKNOWN("Unknown");
+    UNKNOWN("Unknown"),
+    MODIFIED_CLIENT("Modified Client (Unknown)");
 
     private String name;
 

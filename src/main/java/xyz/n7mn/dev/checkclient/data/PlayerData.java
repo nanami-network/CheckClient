@@ -3,6 +3,7 @@ package xyz.n7mn.dev.checkclient.data;
 import org.bukkit.entity.Player;
 import xyz.n7mn.dev.checkclient.data.impl.ClientData;
 import xyz.n7mn.dev.checkclient.data.impl.ModData;
+import xyz.n7mn.dev.checkclient.type.ClientType;
 
 public class PlayerData {
 

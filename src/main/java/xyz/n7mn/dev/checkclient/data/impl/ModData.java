@@ -1,6 +1,7 @@
 package xyz.n7mn.dev.checkclient.data.impl;
 
 import xyz.n7mn.dev.checkclient.data.PlayerData;
+import xyz.n7mn.dev.checkclient.type.ClientType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +22,6 @@ public class ModData {
     public ModData(PlayerData data) {
         this.data = data;
     }
-
 
     /**
      * @see ClientData#isSendedHandShake()
