@@ -9,6 +9,8 @@ import io.github.retrooper.packetevents.packettype.PacketType;
 import io.github.retrooper.packetevents.packetwrappers.play.in.custompayload.WrappedPacketInCustomPayload;
 import io.github.retrooper.packetevents.packetwrappers.play.out.custompayload.WrappedPacketOutCustomPayload;
 import io.github.retrooper.packetevents.utils.server.ServerVersion;
+import xyz.n7mn.dev.checkclient.CheckClientInstance;
+import xyz.n7mn.dev.checkclient.check.CheckMCBrandAbstract;
 import xyz.n7mn.dev.checkclient.data.PlayerData;
 import xyz.n7mn.dev.checkclient.data.PlayerDataUtil;
 import xyz.n7mn.dev.checkclient.lunar.LunarClient;
@@ -37,44 +39,15 @@ public class PacketReceiveEvent extends PacketListenerAbstract {
                         && !data.getClientData().isReceivedMCBrand()
                         && (channel.equalsIgnoreCase("minecraft:brand") || channel.equalsIgnoreCase("MC|Brand"))) {
 
-                    if (client.equalsIgnoreCase("forge")) {
-                        data.getClientData().setType(ClientType.FORGE_1_13_ABOVE);
 
-                        if (!data.getClientData().isSendedHandShake() && PacketEvents.get().getServerUtils().getVersion().isNewerThan(ServerVersion.v_1_12_2)) {
-                            //todo: fake handshake (cannot detectable player version)
+                    for (CheckMCBrandAbstract check : CheckClientInstance.INSTANCE.getMCBrands()) {
+                        ClientType clientType = check.run(data, client);
+
+                        if (clientType != ClientType.UNKNOWN) {
+                            data.getClientData().setType(clientType);
+
+                            break;
                         }
-
-                        //data.getClientData().setSendedHandShake(true);
-                    } else if (client.equalsIgnoreCase("fml:forge")) {
-                        data.getClientData().setType(ClientType.FORGE_1_13_BELOW);
-
-                        if (!data.getClientData().isSendedHandShake()) {
-                            PacketEvents.get().getPlayerUtils().sendPacket(event.getPlayer(), new WrappedPacketOutCustomPayload("FML|HS", new byte[]{-2, 0}));
-                            PacketEvents.get().getPlayerUtils().sendPacket(event.getPlayer(), new WrappedPacketOutCustomPayload("FML|HS", new byte[]{0, 2, 0, 0, 0, 0}));
-                            PacketEvents.get().getPlayerUtils().sendPacket(event.getPlayer(), new WrappedPacketOutCustomPayload("FML|HS", new byte[]{2, 0, 0, 0, 0}));
-
-                            data.getClientData().setSendedHandShake(true);
-                        }
-                    } else if (client.equalsIgnoreCase("fabric")) {
-                        data.getClientData().setType(ClientType.FABRIC);
-                    } else if (client.startsWith("lunar")) {
-                        data.getClientData().setType(ClientType.LUNAR);
-
-                        ModSettings.ModSetting disabled = new ModSettings.ModSetting(false, new HashMap<>());
-
-                        LunarClient.sendLCPacketModSettingsPacket(event.getPlayer(), new LCPacketModSettings(new ModSettings()
-                                .addModSetting("freelook", disabled)));
-
-                    } else if (client.startsWith("Feather Forge")) {
-                        data.getClientData().setType(ClientType.FEATHER_FORGE);
-                    } else if (client.startsWith("Feather Fabric")) {
-                        data.getClientData().setType(ClientType.FEATHER_FABRIC);
-                    } else if (client.equalsIgnoreCase("plc")) {
-                        data.getClientData().setType(ClientType.PVP_LOUNGE);
-                    } else if (client.equalsIgnoreCase("blueberry")) {
-                        data.getClientData().setType(ClientType.BLUEBERRY);
-                    } else if (client.equalsIgnoreCase("vanilla")) {
-                        data.getClientData().setType(ClientType.VANILLA);
                     }
 
                     data.getClientData().setMCBrandResult(data.getClientData().getType());
