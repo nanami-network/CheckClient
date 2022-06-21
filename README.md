@@ -9,6 +9,7 @@
 - [x] LabyMod
 - [x] 5-zig mod
 - [x] BlueBerry
+- [x] Forge (1.13-latest) (1.13 or higher is required)
 
 ## TODO
-- [ ] Forge (1.13-latest)
+

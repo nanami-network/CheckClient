@@ -1,17 +1,13 @@
 package xyz.n7mn.dev.checkclient.packet;
 
-import com.lunarclient.bukkitapi.nethandler.client.LCPacketModSettings;
-import com.lunarclient.bukkitapi.nethandler.client.obj.ModSettings;
-import io.github.retrooper.packetevents.PacketEvents;
-import io.github.retrooper.packetevents.event.PacketListenerAbstract;
+import io.github.retrooper.packetevents.PacketEvents;import io.github.retrooper.packetevents.event.PacketListenerAbstract;
 import io.github.retrooper.packetevents.event.impl.*;
 import io.github.retrooper.packetevents.packettype.PacketType;
-import io.github.retrooper.packetevents.packetwrappers.WrappedPacket;
 import io.github.retrooper.packetevents.packetwrappers.handshaking.setprotocol.WrappedPacketHandshakingInSetProtocol;
 import io.github.retrooper.packetevents.packetwrappers.login.in.custompayload.WrappedPacketLoginInCustomPayload;
 import io.github.retrooper.packetevents.packetwrappers.login.out.custompayload.WrappedPacketLoginOutCustomPayload;
 import io.github.retrooper.packetevents.packetwrappers.play.in.custompayload.WrappedPacketInCustomPayload;
-import io.github.retrooper.packetevents.packetwrappers.play.out.custompayload.WrappedPacketOutCustomPayload;
+import io.github.retrooper.packetevents.utils.pair.Pair;
 import io.github.retrooper.packetevents.utils.player.ClientVersion;
 import io.github.retrooper.packetevents.utils.server.ServerVersion;
 import io.netty.buffer.ByteBuf;
@@ -21,16 +17,13 @@ import xyz.n7mn.dev.checkclient.CheckClientInstance;
 import xyz.n7mn.dev.checkclient.check.CheckMCBrandAbstract;
 import xyz.n7mn.dev.checkclient.data.PlayerData;
 import xyz.n7mn.dev.checkclient.data.PlayerDataUtil;
-import xyz.n7mn.dev.checkclient.lunar.LunarClient;
 import xyz.n7mn.dev.checkclient.type.ClientType;
 import xyz.n7mn.dev.checkclient.util.FeatherUtils;
 import xyz.n7mn.dev.checkclient.util.ForgeUtils;
+import xyz.n7mn.dev.checkclient.util.bytebuf.MinecraftByteBuf;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PacketReceiveEvent extends PacketListenerAbstract {
 
@@ -100,24 +93,28 @@ public class PacketReceiveEvent extends PacketListenerAbstract {
     public void onPacketLoginReceive(PacketLoginReceiveEvent event) {
         try {
             if (event.getPacketId() == PacketType.Login.Client.CUSTOM_PAYLOAD) {
+                event.setCancelled(true);
 
                 WrappedPacketLoginInCustomPayload wrapper = new WrappedPacketLoginInCustomPayload(event.getNMSPacket());
 
-                if (wrapper.getMessageId() == 1212) {
-                    Bukkit.getLogger().info("wrapper:" + new String(wrapper.getData(), StandardCharsets.UTF_8));
+                if (wrapper.getMessageId() == 113 || wrapper.getMessageId() == 117) {
+                    MinecraftByteBuf buf = new MinecraftByteBuf(Unpooled.wrappedBuffer(wrapper.getData()));
+
+                    List<String> mods = readModList(buf);
+                    mods.forEach(r -> System.out.println("mods: " + r));
                 }
-
-                Bukkit.getLogger().info("packet:" + "incoming!");
-
             } else if (event.getPacketId() == PacketType.Login.Client.START) {
                 ClientVersion version = hashMap.get(event.getChannel());
 
                 if (version.isNewerThanOrEquals(ClientVersion.v_1_13) && PacketEvents.get().getServerUtils().getVersion().isNewerThanOrEquals(ServerVersion.v_1_13)) {
                     if (version.isOlderThan(ClientVersion.v_1_17)) {
-                        PacketEvents.get().getPlayerUtils().sendPacket(event.getChannel(), new WrappedPacketLoginOutCustomPayload(1212, "fml:handshake", new byte[]{1, 0, 0, 0}));
+                        PacketEvents.get().getPlayerUtils().sendPacket(event.getChannel(), new WrappedPacketLoginOutCustomPayload(1_13, "fml:handshake", new byte[]{1, 0, 0, 0}));
                     } else {
-                        //PacketEvents.get().getPlayerUtils().sendPacket(event.getChannel(), new WrappedPacketLoginOutCustomPayload(1212, "fml:handshake", new byte[]{2, 0, 0, 0}));
-                        //todo: v1_17 handshake
+                        MinecraftByteBuf buf = emulateFMLv3(new MinecraftByteBuf(Unpooled.buffer()));
+                        byte[] bytes = PacketEvents.get().getByteBufUtil().getBytes(buf.getBuf());
+
+                        WrappedPacketLoginOutCustomPayload wrapper = new WrappedPacketLoginOutCustomPayload(1_17, "fml:handshake", bytes);
+                        PacketEvents.get().getPlayerUtils().sendPacket(event.getChannel(), wrapper);
                     }
                 }
 
@@ -128,6 +125,110 @@ public class PacketReceiveEvent extends PacketListenerAbstract {
             hashMap.remove(event.getChannel());
         }
     }
+
+    public static Map<String, String> channels = new HashMap<>();
+
+    public static List<String> dataPackRegistries = new ArrayList<>();
+
+    public static Map<String, Pair<String, String>> mods = new HashMap<>();
+
+    static {
+        channels.put("fml:loginwrapper", "FML3");
+        channels.put("forge:tier_sorting", "1.0");
+        channels.put("fml:handshake", "FML3");
+        channels.put("minecraft:unregister", "FML3");
+        channels.put("fml:play", "FML3");
+        channels.put("minecraft:register", "FML3");
+        channels.put("forge:split", "1.1");
+
+        dataPackRegistries.add("minecraft:block");
+        dataPackRegistries.add("minecraft:fluid");
+        dataPackRegistries.add("minecraft:item");
+        dataPackRegistries.add("minecraft:mob_effect");
+        dataPackRegistries.add("minecraft:sound_event");
+        dataPackRegistries.add("minecraft:potion");
+        dataPackRegistries.add("minecraft:enchantment");
+        dataPackRegistries.add("minecraft:entity_type");
+        dataPackRegistries.add("minecraft:block_entity_type");
+        dataPackRegistries.add("minecraft:particle_type");
+        dataPackRegistries.add("minecraft:menu");
+        dataPackRegistries.add("minecraft:painting_variant");
+        dataPackRegistries.add("minecraft:recipe_serializer");
+        dataPackRegistries.add("minecraft:stat_type");
+        dataPackRegistries.add("minecraft:villager_profession");
+        dataPackRegistries.add("forge:data_serializers");
+        dataPackRegistries.add("forge:fluid_type");
+
+        //randoms
+        mods.put("minecraft", new Pair<>("Minecraft", "1.19"));
+        mods.put("forge", new Pair<>("Forge", "41.0.45"));
+    }
+
+    /*
+     * Todo: emulate Mod Data? I think impossibly!
+     */
+    public MinecraftByteBuf emulateModData(MinecraftByteBuf buf) {
+        //I don't know what is this
+        //maybe packet id.
+        buf.writeVarInt(5);
+
+        //normal forge mods!
+        buf.writeMap(mods, (o, s) -> o.writeUtf(s, 0x100), (o, p) -> {
+            o.writeUtf(p.getFirst(), 0x100);
+            o.writeUtf(p.getSecond(), 0x100);
+        });
+
+        return buf;
+    }
+
+    public MinecraftByteBuf emulateFMLv3(MinecraftByteBuf buf) {
+        //I don't know what is this
+        //maybe packet id.
+        buf.writeVarInt(1);
+
+        //mods
+        buf.writeVarInt(2);
+
+        //normal forge mods!
+        buf.writeUtf("minecraft", 0x100);
+        buf.writeUtf("forge", 0x100);
+
+        //channels
+        buf.writeVarInt(channels.size());
+        channels.forEach((k, v) -> {
+            buf.writeUtf(k);
+            buf.writeUtf(v, 0x100);
+        });
+
+        //datapacks
+        buf.writeVarInt(dataPackRegistries.size());
+        dataPackRegistries.forEach(buf::writeUtf);
+
+        return buf;
+    }
+
+    public List<String> readModList(MinecraftByteBuf buf) {
+        List<String> mods = new ArrayList<>();
+
+        //mod count
+        buf.readVarInt();
+
+        final int len = buf.readVarInt();
+        for (int i = 0; i < len; i++) {
+            final String mod = buf.readUtf(0x100);
+
+            if (i != 0) {
+                mods.add(mod);
+            }
+        }
+
+        return mods;
+    }
+
+    public Map<String, Pair<String, String>> readModData(MinecraftByteBuf buf) {
+        return buf.readMap(o -> o.readUtf(0x100), o -> Pair.of(o.readUtf(0x100), o.readUtf(0x100)));
+    }
+
 
     @Override
     public void onPacketHandshakeReceive(PacketHandshakeReceiveEvent event) {
