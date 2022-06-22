@@ -1,6 +1,7 @@
 package xyz.n7mn.dev.checkclient.packet;
 
-import io.github.retrooper.packetevents.PacketEvents;import io.github.retrooper.packetevents.event.PacketListenerAbstract;
+import io.github.retrooper.packetevents.PacketEvents;
+import io.github.retrooper.packetevents.event.PacketListenerAbstract;
 import io.github.retrooper.packetevents.event.impl.*;
 import io.github.retrooper.packetevents.packettype.PacketType;
 import io.github.retrooper.packetevents.packetwrappers.handshaking.setprotocol.WrappedPacketHandshakingInSetProtocol;
@@ -48,7 +49,7 @@ public class PacketReceiveEvent extends PacketListenerAbstract {
                         ClientType clientType = check.run(data, client);
 
                         if (clientType != ClientType.UNKNOWN) {
-                            data.getClientData().setType(clientType);
+                            data.getClientData().getClientTypes().add(clientType);
 
                             break;
                         }
@@ -106,16 +107,14 @@ public class PacketReceiveEvent extends PacketListenerAbstract {
             } else if (event.getPacketId() == PacketType.Login.Client.START) {
                 ClientVersion version = hashMap.get(event.getChannel());
 
-                if (version.isNewerThanOrEquals(ClientVersion.v_1_13) && PacketEvents.get().getServerUtils().getVersion().isNewerThanOrEquals(ServerVersion.v_1_13)) {
-                    if (version.isOlderThan(ClientVersion.v_1_17)) {
-                        PacketEvents.get().getPlayerUtils().sendPacket(event.getChannel(), new WrappedPacketLoginOutCustomPayload(1_13, "fml:handshake", new byte[]{1, 0, 0, 0}));
-                    } else {
-                        MinecraftByteBuf buf = emulateFMLv3(new MinecraftByteBuf(Unpooled.buffer()));
-                        byte[] bytes = PacketEvents.get().getByteBufUtil().getBytes(buf.getBuf());
+                if (version.isOlderThan(ClientVersion.v_1_17)) {
+                    PacketEvents.get().getPlayerUtils().sendPacket(event.getChannel(), new WrappedPacketLoginOutCustomPayload(1_13, "fml:handshake", new byte[]{1, 0, 0, 0}));
+                } else {
+                    MinecraftByteBuf buf = emulateFMLv3(new MinecraftByteBuf(Unpooled.buffer()));
+                    byte[] bytes = PacketEvents.get().getByteBufUtil().getBytes(buf.getBuf());
 
-                        WrappedPacketLoginOutCustomPayload wrapper = new WrappedPacketLoginOutCustomPayload(1_17, "fml:handshake", bytes);
-                        PacketEvents.get().getPlayerUtils().sendPacket(event.getChannel(), wrapper);
-                    }
+                    WrappedPacketLoginOutCustomPayload wrapper = new WrappedPacketLoginOutCustomPayload(1_17, "fml:handshake", bytes);
+                    PacketEvents.get().getPlayerUtils().sendPacket(event.getChannel(), wrapper);
                 }
 
                 hashMap.remove(event.getChannel());
@@ -236,7 +235,10 @@ public class PacketReceiveEvent extends PacketListenerAbstract {
 
         final ClientVersion version = ClientVersion.getClientVersion(wrapper.getProtocolVersion());
 
-        hashMap.put(event.getChannel(), version);
+        if (version.isNewerThanOrEquals(ClientVersion.v_1_13)
+                && PacketEvents.get().getServerUtils().getVersion().isNewerThanOrEquals(ServerVersion.v_1_13)) {
+            hashMap.put(event.getChannel(), version);
+        }
     }
 
     @Override

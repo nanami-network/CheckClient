@@ -3,6 +3,9 @@ package xyz.n7mn.dev.checkclient.data.impl;
 import xyz.n7mn.dev.checkclient.data.PlayerData;
 import xyz.n7mn.dev.checkclient.type.ClientType;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ClientData {
 
     private PlayerData data;
@@ -16,6 +19,17 @@ public class ClientData {
     private ClientType type = ClientType.UNKNOWN;
 
     private ClientType MCBrandResult = ClientType.UNKNOWN;
+
+    //todo: uses
+    private List<ClientType> clientTypes = new ArrayList<>();
+
+    public List<ClientType> getClientTypes() {
+        return clientTypes;
+    }
+
+    public void setClientTypes(List<ClientType> clientTypes) {
+        this.clientTypes = clientTypes;
+    }
 
     public ClientType getType() {
         return type;

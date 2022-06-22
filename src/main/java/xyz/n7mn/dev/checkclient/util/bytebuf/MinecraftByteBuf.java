@@ -123,11 +123,11 @@ public class MinecraftByteBuf {
         }
     }
 
-    public <K, V> void writeMap(Map<K, V> map, MinecraftByteBuf.Writer<K> p_236833_, MinecraftByteBuf.Writer<V> p_236834_) {
+    public <K, V> void writeMap(Map<K, V> map, MinecraftByteBuf.Writer<K> writer1, MinecraftByteBuf.Writer<V> writer2) {
         this.writeVarInt(map.size());
         map.forEach((p_236856_, p_236857_) -> {
-            p_236833_.accept(this, p_236856_);
-            p_236834_.accept(this, p_236857_);
+            writer1.accept(this, p_236856_);
+            writer2.accept(this, p_236857_);
         });
     }
 
@@ -148,8 +148,8 @@ public class MinecraftByteBuf {
         return this.readMap(Maps::newHashMapWithExpectedSize, reader1, reader2);
     }
 
-    public <T> Optional<T> readOptional(MinecraftByteBuf.Reader<T> p_236861_) {
-        return this.buf.readBoolean() ? Optional.of(p_236861_.apply(this)) : Optional.empty();
+    public <T> Optional<T> readOptional(MinecraftByteBuf.Reader<T> read) {
+        return this.buf.readBoolean() ? Optional.of(read.apply(this)) : Optional.empty();
     }
 
     public <T> void writeOptional(Optional<T> optional, MinecraftByteBuf.Writer<T> writer) {
