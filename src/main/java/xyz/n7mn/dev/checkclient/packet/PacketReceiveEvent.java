@@ -1,19 +1,9 @@
 package xyz.n7mn.dev.checkclient.packet;
 
-import io.github.retrooper.packetevents.PacketEvents;
 import io.github.retrooper.packetevents.event.PacketListenerAbstract;
-import io.github.retrooper.packetevents.event.impl.*;
+import io.github.retrooper.packetevents.event.impl.PacketPlayReceiveEvent;
 import io.github.retrooper.packetevents.packettype.PacketType;
-import io.github.retrooper.packetevents.packetwrappers.handshaking.setprotocol.WrappedPacketHandshakingInSetProtocol;
-import io.github.retrooper.packetevents.packetwrappers.login.in.custompayload.WrappedPacketLoginInCustomPayload;
-import io.github.retrooper.packetevents.packetwrappers.login.out.custompayload.WrappedPacketLoginOutCustomPayload;
 import io.github.retrooper.packetevents.packetwrappers.play.in.custompayload.WrappedPacketInCustomPayload;
-import io.github.retrooper.packetevents.utils.pair.Pair;
-import io.github.retrooper.packetevents.utils.player.ClientVersion;
-import io.github.retrooper.packetevents.utils.server.ServerVersion;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import org.bukkit.Bukkit;
 import xyz.n7mn.dev.checkclient.CheckClientInstance;
 import xyz.n7mn.dev.checkclient.check.CheckMCBrandAbstract;
 import xyz.n7mn.dev.checkclient.data.PlayerData;
@@ -21,10 +11,8 @@ import xyz.n7mn.dev.checkclient.data.PlayerDataUtil;
 import xyz.n7mn.dev.checkclient.type.ClientType;
 import xyz.n7mn.dev.checkclient.util.FeatherUtils;
 import xyz.n7mn.dev.checkclient.util.ForgeUtils;
-import xyz.n7mn.dev.checkclient.util.bytebuf.MinecraftByteBuf;
 
 import java.nio.charset.StandardCharsets;
-import java.util.*;
 
 public class PacketReceiveEvent extends PacketListenerAbstract {
 
@@ -88,7 +76,7 @@ public class PacketReceiveEvent extends PacketListenerAbstract {
         }
     }
 
-    private Map<Object, ClientVersion> hashMap = new HashMap<>();
+    /*private Map<Object, ClientVersion> hashMap = new HashMap<>();
 
     @Override
     public void onPacketLoginReceive(PacketLoginReceiveEvent event) {
@@ -165,7 +153,7 @@ public class PacketReceiveEvent extends PacketListenerAbstract {
 
     /*
      * Todo: emulate Mod Data? I think impossibly!
-     */
+     *
     public MinecraftByteBuf emulateModData(MinecraftByteBuf buf) {
         //I don't know what is this
         //maybe packet id.
@@ -264,7 +252,7 @@ public class PacketReceiveEvent extends PacketListenerAbstract {
         if (event.getPacketId() == PacketType.Login.Server.DISCONNECT) {
             hashMap.remove(event.getChannel());
         }
-    }
+    }*/
 
     public void readyAlertModerator(PlayerData data) {
 
