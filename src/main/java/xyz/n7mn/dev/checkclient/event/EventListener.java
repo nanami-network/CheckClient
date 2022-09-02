@@ -10,7 +10,7 @@ import xyz.n7mn.dev.checkclient.data.PlayerDataUtil;
 
 public class EventListener implements Listener {
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    /*@EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoinEvent(PlayerJoinEvent e) {
         PlayerData data = PlayerDataUtil.getPlayerData(e.getPlayer());
     }
@@ -18,5 +18,5 @@ public class EventListener implements Listener {
     @EventHandler
     public void onPlayerQuitEvent(PlayerQuitEvent e) {
         PlayerDataUtil.removePlayerData(e.getPlayer());
-    }
+    }*/
 }

@@ -1,6 +1,6 @@
 package xyz.n7mn.dev.checkclient.util;
 
-import io.github.retrooper.packetevents.utils.player.ClientVersion;
+import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class ForgeUtils {
     public static String getHandShake(ClientVersion version) {
-        return version.isNewerThanOrEquals(ClientVersion.v_1_13) ? "fml:handshake" : "FML|HS";
+        return version.isNewerThanOrEquals(ClientVersion.V_1_13) ? "fml:handshake" : "FML|HS";
     }
 
     /**

@@ -1,2 +1,18 @@
 prefix: '&c[CheckClient] '
 
+clientSettings:
+  Vanilla:
+    name:
+      - 'Vanilla'
+  Feather-Forge:
+    name:
+      - 'Feather Forge'
+  Feather-Fabric:
+    name:
+      - 'Feather Fabric'
+  BlueBerry:
+    name:
+      - 'BlueBerry'
+  LunarClient:
+    name:
+      - 'Lunar'

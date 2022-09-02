@@ -21,13 +21,13 @@ public class ClientData {
     private ClientType MCBrandResult = ClientType.UNKNOWN;
 
     //todo: uses
-    private List<ClientType> clientTypes = new ArrayList<>();
+    private List<String> clientTypes = new ArrayList<>();
 
-    public List<ClientType> getClientTypes() {
+    public List<String> getClientTypes() {
         return clientTypes;
     }
 
-    public void setClientTypes(List<ClientType> clientTypes) {
+    public void setClientTypes(List<String> clientTypes) {
         this.clientTypes = clientTypes;
     }
 
